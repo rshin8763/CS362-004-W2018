@@ -1,3 +1,1 @@
-project/shinr README
-
-
+This is my assignment-1 submission!

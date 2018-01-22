@@ -661,6 +661,7 @@ int ce_adventurer(struct gameState *state, int *drawntreasure, int currentPlayer
     }
     while(*z-1>=0){
         state->discard[currentPlayer][state->discardCount[currentPlayer]++]=temphand[*z-1]; // discard all cards in play that have been drawn
+        //Deleted *z = *z-1
     }
     return 0;
 }

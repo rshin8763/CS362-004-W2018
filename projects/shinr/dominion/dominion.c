@@ -661,7 +661,6 @@ int ce_adventurer(struct gameState *state, int *drawntreasure, int currentPlayer
     }
     while(*z-1>=0){
         state->discard[currentPlayer][state->discardCount[currentPlayer]++]=temphand[*z-1]; // discard all cards in play that have been drawn
-        *z=*z-1;
     }
     return 0;
 }
@@ -682,6 +681,7 @@ int ce_council_room(struct gameState *state, int currentPlayer, int handPos){
     {
         if ( i != currentPlayer )
         {
+            drawCard(i, state);
             drawCard(i, state);
         }
     }
@@ -708,12 +708,12 @@ int ce_steward(struct gameState *state, int currentPlayer, int choice1, int choi
     else
     {
         //trash 2 cards in hand
-        discardCard(choice2, currentPlayer, state, 1);
+        discardCard(choice1, currentPlayer, state, 1);
         discardCard(choice3, currentPlayer, state, 1);
     }
 
     //discard card from hand
-    discardCard(handPos, currentPlayer, state, 0);
+    discardCard(handPos, currentPlayer+1, state, 0);
     return 0;
 }
 

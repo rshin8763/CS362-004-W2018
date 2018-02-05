@@ -17,6 +17,9 @@ char *inputString()
     for(i=0; i<6; i++ ){
         string[i] = rand()%('z'-'a'+1) + 'a';
     }
+
+    string[rand()%6] = '\0';
+
     return string;
 }
 
@@ -48,6 +51,7 @@ void testme()
        && state == 9)
     {
       printf("error ");
+      free(s);
       exit(200);
     }
   }

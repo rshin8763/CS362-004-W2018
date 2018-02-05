@@ -14,11 +14,11 @@ char *inputString()
     char* string = malloc(6);
     int i;
 
-    for(i=0; i<6; i++ ){
+    for(i=0; i<5; i++ ){
         string[i] = rand()%('z'-'a'+1) + 'a';
     }
 
-    string[rand()%6] = '\0';
+    string[5] = '\0';
 
     return string;
 }

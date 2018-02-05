@@ -80,3 +80,29 @@ int compareStates(int *failFlag, struct gameState *pre, struct gameState *post){
     if (testFlag == 0) printf("PASS\n");
     else printf("FAIL\n");
 }
+
+int compareArray(int preArr[], int postArr[], int size){
+
+    int testFlag = 0;
+
+    int i;
+
+    for (i=0; i<size; i++){
+        testFlag += !(preArr[i] == postArr[i]);
+    }
+    //returns 0 if the data perfectly matches.
+    //returns nonzero otherwise
+    return testFlag;
+}
+
+int compareData(void *pre, void *post, int size){
+    char *preData = (char*)pre;
+    char *postData = (char*)post;
+    int i;
+    int testFlag = 0;
+
+    for (i=0; i < size; i++){
+        testFlag += !(preData[i] == postData[i]) ;
+    }
+    return testFlag;
+}

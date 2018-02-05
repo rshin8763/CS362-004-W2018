@@ -25,24 +25,15 @@ int main(){
     struct gameState post;
     struct gameState pre;
 
-    int kingdomCards[10] = {-1};
     int i=0; int j=0; int k=0;
+
     int failFlag = 0; int testFlag;
 
-    while (i < 10){
-        int randomKingdomCard = rand()%(treasure_map - adventurer + 1) + adventurer;
-        if (!inArray(kingdomCards, 10, randomKingdomCard)){
-            kingdomCards[i] = randomKingdomCard;
-            i++;
-        }
-    }
+    //initialize random game
+    randomGame(2, &post);
 
-    int randomSeed = rand()%1024;
-
-    //initialize game
-    initializeGame(2, kingdomCards, randomSeed, &post);
+    //save game state
     memcpy(&pre, &post, sizeof(struct gameState));
-
 
     //Test 0-MAX size hand with no coins
     printf("TEST HANDS WITH NO COINS: ");
@@ -56,7 +47,7 @@ int main(){
             post.hand[testPlayer][j] = randomKingdomCard;
         }
         updateCoins(testPlayer, &post, 0);
-        testFlag += myAssert(&failFlag, post.coins == 0);
+        testFlag += myAssert("", &failFlag, post.coins == 0);
     }
     if (testFlag == 0) printf("PASS\n");
     else printf("FAIL\n");
@@ -72,7 +63,7 @@ int main(){
             post.hand[testPlayer][j] = copper;
         }
         updateCoins(testPlayer, &post, 0);
-        testFlag += myAssert(&failFlag, post.coins == (i*1));
+        testFlag += myAssert("", &failFlag, post.coins == (i*1));
     }
     if (testFlag == 0) printf("PASS\n");
     else printf("FAIL\n");
@@ -88,7 +79,7 @@ int main(){
             post.hand[testPlayer][j] = silver;
         }
         updateCoins(testPlayer, &post, 0);
-        testFlag += myAssert(&failFlag, post.coins == (i*2));
+        testFlag += myAssert("", &failFlag, post.coins == (i*2));
     }
     if (testFlag == 0) printf("PASS\n");
     else printf("FAIL\n");
@@ -104,7 +95,7 @@ int main(){
             post.hand[testPlayer][j] = gold;
         }
         updateCoins(testPlayer, &post, 0);
-        testFlag += myAssert(&failFlag, post.coins == (i*3));
+        testFlag += myAssert("", &failFlag, post.coins == (i*3));
     }
     if (testFlag == 0) printf("PASS\n");
     else printf("FAIL\n");
@@ -129,7 +120,7 @@ int main(){
                 if (randomCard == gold) numGold++;
             }
             updateCoins(testPlayer, &post, bonus);
-            testFlag += myAssert(&failFlag, post.coins == numCopper + 2*numSilver + 3*numGold + bonus);
+            testFlag += myAssert("", &failFlag, post.coins == numCopper + 2*numSilver + 3*numGold + bonus);
         }
     }
     if (testFlag == 0) printf("PASS\n");
@@ -147,20 +138,8 @@ int main(){
     pre.handCount[testPlayer] = 0;
     post.handCount[testPlayer] = 0;
 
-    char *preData = (char*)&pre;
-    char *postData = (char*)&post;
-
-    printf("TEST THAT NO STATE DATA OUTSIDE OF SPECIFICATION HAS CHANGED: ");
-    fflush(stdout);
-
-    testFlag = 0;
-
-    for (i=0; i < sizeof(struct gameState); i++){
-        testFlag += myAssert(&failFlag, preData[i] == postData[i]);
-    }
-    if (testFlag == 0) printf("PASS\n");
-    else printf("FAIL\n");
-
+    compareStates(&failFlag, &pre, &post);
+    
     if (failFlag == 0)
         printf("TESTS SUCCESSFUL\n");
     return 0;

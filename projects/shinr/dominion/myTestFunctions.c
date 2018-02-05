@@ -5,6 +5,18 @@
 #include <string.h>
 #include <time.h>
 
+void getCardQuantities(int array[], int size, int cardArray[]){
+    int i, j;
+    //clear card array
+    for (i=0; i<= treasure_map; i++){
+        cardArray[i] = 0;
+    }
+    //get quantities
+    for (j=0; j<size; j++) {
+        cardArray[array[j]]++;
+    }
+}
+
 int inArray(int arr[], int size, int val){
     int i;
     for(i=0; i<size; i++){
@@ -43,10 +55,11 @@ int randomHand(int player, int size, struct gameState *state){
 }
 
 // My function returns 0 if the assertion is held and 1 if not. 
-int myAssert(int *failFlag, int boolean){
+int myAssert(char * msg, int *failFlag, int boolean){
     if (!boolean){
         *failFlag = 1;
-        printf("Assertion Failed!\n");
+        printf("ASSERT %s: ", msg);
+        printf("Failed!\n");
     }
     return !boolean;
 }
@@ -61,8 +74,9 @@ int compareStates(int *failFlag, struct gameState *pre, struct gameState *post){
     fflush(stdout);
 
     for (i=0; i < sizeof(struct gameState); i++){
-        testFlag += myAssert(failFlag, preData[i] == postData[i]);
+        testFlag += myAssert("", failFlag, preData[i] == postData[i]);
     }
+
     if (testFlag == 0) printf("PASS\n");
     else printf("FAIL\n");
 }

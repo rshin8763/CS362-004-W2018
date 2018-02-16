@@ -6,6 +6,7 @@
  *********************************************************************/
 #include "myTestFunctions.h"
 #include "dominion.h"
+#include "dominion_helpers.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,6 +15,7 @@
 #define MAX_DECK 500
 #define debug 0
 #define players 3
+
 
 int main(){
 

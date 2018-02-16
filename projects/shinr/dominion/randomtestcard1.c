@@ -35,11 +35,6 @@ int tf_victoryState = 1;
 
 int testFail = 0;
 
-void drawBigTitle(char *msg){
-}
-void drawSmallitle(char *msg){
-}
-
 int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState *state, int handPos, int *bonus);
 
 int main(){
@@ -51,10 +46,10 @@ int main(){
 
     printf("------TEST FOR SMITHY--------");
 
-    int numPlayers = rand()%MAX_PLAYERS;
+    int numPlayers = 3;
         
     //initialize random game
-    randomState(numPlayers, &pre);
+    randomGame(numPlayers, &pre);
 
     //set prerequisite conditions
     int currentPlayer = pre.whoseTurn;
@@ -65,6 +60,8 @@ int main(){
 
     //set card int hand position to smithy
     post.hand[currentPlayer][handPos] = smithy;
+
+    printf("handPos:%d\n", handPos);
 
     //save game state
     memcpy(&pre, &post, sizeof(struct gameState));

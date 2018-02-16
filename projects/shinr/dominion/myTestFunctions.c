@@ -67,7 +67,6 @@ int randomState(int numPlayers, struct gameState *state){
     int i=0;
     int j;
 
-    //Select random cards
     while (i < 10){
         int randomKingdomCard = rand()%(treasure_map - adventurer + 1) + adventurer;
         if (!inArray(kingdomCards, 10, randomKingdomCard)){
@@ -81,26 +80,32 @@ int randomState(int numPlayers, struct gameState *state){
     initializeGame(numPlayers, kingdomCards, randomSeed, state);
 
     //Set other variables
-    state->outpostPlayed = 0;
-    state->outpostTurn = 0;
+    //state->outpostPlayed = 0;
+    //state->outpostTurn = 0;
     state->whoseTurn = rand()%numPlayers;
     state->numActions = (rand()%5)+1; /* Starts at 1 each turn */
-    state->coins = rand()%10; /* Use as you see fit! */
-    state->numBuys = rand()%5+1; /* Starts at 1 each turn */
+    //state->coins = rand()%10; /* Use as you see fit! */
+    state->numBuys = (rand()%5)+1; /* Starts at 1 each turn */
 
     // Randomize Deck and Hand State
     for (i = 0; i < numPlayers; ++i){
 
         // Set total cards in play for a person. 
-        // from starting deck size - MAX_DECK
-        int maxDeck = state->deckCount[i] + rand()%(MAX_DECK - state->deckCount[i] + 1); 
 
-        //Randomly distribute maxDeck count to the state variables below.
-        maxDeck -= state->handCount[i] = rand()%(maxDeck+1);
-        maxDeck -= state->deckCount[i] = rand()%(maxDeck+1);
-        //maxDeck -= state->playedCardCount = rand()%(maxDeck+1);
-        maxDeck -= state->discardCount[i] = rand()%(maxDeck+1);
-        
+        // from starting deck size - MAX_DECK
+        int startingDeck = state->deckCount[i];
+
+        do {
+            //Randomly distribute maxDeck count to the state variables below.
+            int maxDeck = startingDeck + rand()%(MAX_DECK - startingDeck + 1); 
+            //Ensure that hand has at least 1 card in it (to be used as action card).
+            maxDeck -= state->handCount[i] = rand()%(maxDeck-1+1)+1;
+            //Ensure that deck and discard combined has at least 3 cards in it.
+            maxDeck -= state->deckCount[i] = rand()%(maxDeck+1);
+            //maxDeck -= state->playedCardCount = rand()%(maxDeck+1);
+            state->discardCount[i] = maxDeck;
+        } while (state->deckCount[i] + state->discardCount[i] <= 5);
+
         assert(state->handCount[i] + state->deckCount[i] + state->playedCardCount + state->discardCount[i] <= MAX_DECK);
 
         // Fill all piles with random non Victory cards of types within supply
@@ -118,7 +123,7 @@ int randomState(int numPlayers, struct gameState *state){
         }
     }
     //Action phase must be phase 0
-    state->phase = 0;
+    //state->phase = 0;
     return 0;
 }
 

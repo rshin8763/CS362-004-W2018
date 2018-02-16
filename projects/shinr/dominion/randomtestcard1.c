@@ -18,148 +18,115 @@
 
 // Global Testing Flags
 
-
-// Deck is updated
-int tf_playerDeckChanged = 1;
-// Hand is updated with cards missing from Deck
-int tf_handUpdate = 1;
-// Action value is the same
-int tf_actionValue = 1;
-// Played pile has extra card
-int tf_playedPile = 1;
-// Supply cards are the same
-int tf_supplyCards = 1;
-// Other player's state is invariant
-int tf_discardPile = 1;
-// All player's victory point states are the same
-int tf_victoryState = 1;
-
-int testFail = 0;
-
 int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState *state, int handPos, int *bonus);
 
 int main(){
-    srand(time(0));
-    struct gameState post;
-    struct gameState pre;
-
-    int failFlag = 0; int testFlag;
-
-    printf("------TEST FOR SMITHY--------");
-
-    //initialize random game
-    randomGame(MAX_PLAYERS, &post);
-
-    int testPlayer = pre.whoseTurn;
-    int choice1, choice2, choice3;
-    choice1 = choice2 = choice3 = 0;
-    int bonus = -5;
-
-    int handPos = 5;
-
-    randomHand(testPlayer, 10, &post);
-    
-    //set position 5 card to smithy
-    post.hand[testPlayer][5] = smithy;
-
-    //save game state
-    memcpy(&pre, &post, sizeof(struct gameState));
-
-    cardEffect(smithy, choice1, choice2, choice3, &post, handPos, &bonus);
-
-    printf("3 cards were drawn from player's deck: ");
-    testFlag = 0;
-
-    testFlag += myAssert ("Player has 2 extra cards", &failFlag, (post.handCount[testPlayer] - pre.handCount[testPlayer])== 2);
-
-    testFlag += myAssert ("Played Pile has 1 extra card", &failFlag, (post.playedCardCount - pre.playedCardCount == 1));
-
-    testFlag += myAssert ("Player deck has 3 fewer cards", &failFlag, pre.deckCount[testPlayer] - post.deckCount[testPlayer] == 3 );
-
-    if (!testFlag) printf("PASS\n");
-    else printf ("FAIL\n");
-
+    int overallFail;
+    int testFail;
+    int testCount;
+    int i;
     int j;
 
-    testFlag = 0;
-    printf("Test that gameState for all other players is constant: ");
+    printf("------TEST FOR SMITHY--------\n");
+    for (testCount = 0; testCount < 1000000; ++testCount){
+        testFail = 0;
+        // Deck is updated
+        int tf_playerDeckChanged = 0;
+        // Hand is updated with cards missing from Deck
+        int tf_handUpdate = 0;
+        // Action value is the same
+        int tf_actionValue = 0;
+        // Played pile has extra card
+        int tf_playedPile = 0;
+        // Supply cards are the same
+        // Other player's state is invariant
+        int tf_otherPlayerState = 0;
+        // All player's victory point states are the same
+        int tf_otherStates = 0;
 
-    for (j=0; j<MAX_PLAYERS; j++){
-        if (j != testPlayer){
-            testFlag += myAssert("player hand is preserved", &failFlag, !compareArray(pre.hand[j], post.hand[j], MAX_HAND));
+        printf("------TEST %d--------\n", testCount);
 
-            testFlag += myAssert("player handCount is preserved", &failFlag, pre.handCount[j] == post.handCount[j]);
+        srand(time(0));
+        struct gameState post;
+        struct gameState pre;
 
-            testFlag += myAssert("player deck is preserved", &failFlag, !compareArray(pre.deck[j], post.deck[j], MAX_DECK));
+        int numPlayers = MAX_PLAYERS;
 
+        //initialize random game
+        //randomGame(numPlayers, &post);
+        randomState(numPlayers, &post);
 
-            testFlag += myAssert("player deckCount is preserved", &failFlag, pre.deckCount[j] == post.deckCount[j]);
+        //set prerequisite conditions
+        int currentPlayer = post.whoseTurn;
+        int choice1, choice2, choice3;
+        choice1 = choice2 = choice3 = 0;
+        int bonus = -5;
+        int handPos = rand()%post.handCount[currentPlayer];
 
-            testFlag += myAssert("player discard is preserved", &failFlag, !compareArray(pre.discard[j], post.discard[j], MAX_DECK));
+        //set card int hand position to smithy
+        post.hand[currentPlayer][handPos] = smithy;
 
-            testFlag += myAssert("player discardCount is preserved", &failFlag, pre.discardCount[j] == post.discardCount[j]);
+        //save game state
+        memcpy(&pre, &post, sizeof(struct gameState));
+
+        cardEffect(smithy, choice1, choice2, choice3, &post, handPos, &bonus);
+
+        // Hand should have 2 extra cards. +3 then the smithy discard
+        myAssert ("Player's hand has two drawn cards", &tf_handUpdate, pre.handCount[currentPlayer] + 2 == post.handCount[currentPlayer]);
+
+        // Due to the fact that an empty deck will cause shuffling, the invariant is that deck + played/discard should have 2 fewer cards due to the drawn cards being 
+        // in hand.
+        myAssert ("Player Deck was incremented", &tf_playerDeckChanged, (pre.deckCount[currentPlayer] + pre.discardCount[currentPlayer] + pre.playedCardCount) == (post.discardCount[currentPlayer] + post.deckCount[currentPlayer] + post.playedCardCount + 2));
+
+        //Other player's cards are not changed
+        for (j=0; j<MAX_PLAYERS; j++){
+            if (j != currentPlayer){
+                myAssert("Other player's hand is preserved", &tf_otherPlayerState, !compareArray(pre.hand[j], post.hand[j], MAX_HAND));
+
+                myAssert("Other player's handCount is preserved", &tf_otherPlayerState, pre.handCount[j] == post.handCount[j]);
+
+                myAssert("Other player's deck is preserved", &tf_otherPlayerState,  !compareArray(pre.deck[j], post.deck[j], MAX_DECK));
+
+                myAssert("Other player's deckCount is preserved", &tf_otherPlayerState, pre.deckCount[j] == post.deckCount[j]);
+
+                myAssert("Other player's discard is preserved",&tf_otherPlayerState, !compareArray(pre.discard[j], post.discard[j], MAX_DECK));
+
+                myAssert("Other player's discardCount is preserved", &tf_otherPlayerState, pre.discardCount[j] == post.discardCount[j]);
+            }
         }
+
+        //Veryify card actually draws cards from deck
+
+        // The multiset of cards in hand + deck + discard should be the same before and afterwards
+
+        myAssert("numPlayers unchanged", &tf_otherStates, pre.numPlayers == post.numPlayers); 
+
+        for (i = 0; i<= treasure_map; ++i){
+            myAssert("supplyCount unchanged", &tf_otherStates, pre.supplyCount[i] == post.supplyCount[i]);
+            myAssert("embargoTokens unchanged", &tf_otherStates, pre.embargoTokens[i] == post.embargoTokens[i]);
+        }
+        myAssert("outpostPlayed unchanged", &tf_otherStates, pre.outpostPlayed == post.outpostPlayed);
+        myAssert("outpostTurn unchanged", &tf_otherStates, pre.outpostTurn == post.outpostTurn);
+        //myAssert("whoseTurn unchanged", &tf_otherStates, pre.whoseTurn == post.whoseTurn);
+        //myAssert("phase unchanged", &tf_otherStates, pre.phase == post.phase);
+        myAssert("numActions unchanged", &tf_otherStates, pre.numActions == post.numActions);
+        myAssert("coins unchanged", &tf_otherStates, pre.coins == post.coins);
+        myAssert("numBuys unchanged", &tf_otherStates, pre.numBuys == post.numBuys);
+
+        testFail += tf_playerDeckChanged + tf_handUpdate + tf_actionValue + tf_playedPile + tf_otherPlayerState;
+        if (testFail){
+            printf("pre handCount: %d\n", pre.handCount[currentPlayer]);
+            printf("pre deckCount: %d\n", pre.deckCount[currentPlayer]);
+            printf("pre discardCount: %d\n", pre.discardCount[currentPlayer]);
+
+            //print PreState
+            //print PostState
+        }
+        overallFail += testFail;
     }
-    if (!testFlag) printf("PASS\n");
-    else printf ("FAIL\n");
-
-    printf("Test that kingdom card piles and victory card piles are unchanged: ");
-    testFlag = 0;
-    testFlag += myAssert("Assert that Supply cards are unchanged", &failFlag, !compareData(pre.supplyCount, post.supplyCount, sizeof(pre.supplyCount)));   
-    if (!testFlag) printf("PASS\n");
-    else printf ("FAIL\n");
-
-    if (!failFlag) printf("ALL TESTS SUCCESSFUL\n");
-    else printf("TESTS FAILED\n");
+    if (overallFail){
+    } else printf("ALL TESTS SUCCESSFUL\n");
     return 0;
 }
 
-//int main(){
-//
-//    srand(time(0));
-//    struct gameState post;
-//    struct gameState pre;
-//
-//
-//    printf("------TEST FOR SMITHY--------");
-//
-//    int numPlayers = 3;
-//        
-//    //initialize random game
-//    randomGame(numPlayers, &pre);
-//
-//    //set prerequisite conditions
-//    int currentPlayer = pre.whoseTurn;
-//    int choice1, choice2, choice3;
-//    choice1 = choice2 = choice3 = 0;
-//    int bonus = -5;
-//    int handPos = rand()%pre.handCount[currentPlayer];
-//
-//    //set card int hand position to smithy
-//    post.hand[currentPlayer][handPos] = smithy;
-//
-//    printf("handPos:%d\n", handPos);
-//
-//    //save game state
-//    memcpy(&pre, &post, sizeof(struct gameState));
-//
-//    printf("pre:%d\n", pre.handCount[currentPlayer]);
-//    printf("post:%d\n", post.handCount[currentPlayer]);
-//
-//    cardEffect(smithy, choice1, choice2, choice3, &post, handPos, &bonus);
-//
-//    
-//    printf("pre:%d\n", pre.handCount[currentPlayer]);
-//    printf("post:%d\n", post.handCount[currentPlayer]);
-//
-//    // Hand should have 2 extra cards. +3 then the smithy discard
-//    assert (pre.handCount[currentPlayer] + 2 == post.handCount[currentPlayer]);
-//
-//    // Deck and discard together should have 2 fewer cards
-//    assert (pre.deckCount[currentPlayer] + pre.discardCount[currentPlayer] == post.discardCount[currentPlayer] + post.deckCount[currentPlayer] + 2);
-//
-//    printf("ALL TESTS SUCCESSFUL\n");
-//    return 0;
-//}
-//
-//
+

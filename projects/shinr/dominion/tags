@@ -40,10 +40,11 @@ GREAT_HALL_COST	interface.h	72;"	d
 GetSeed	rngs.c	/^   void GetSeed(long *x)$/;"	f
 HANDSIZE	interface.h	30;"	d
 MATCH	interface.h	40;"	d
-MAX_DECK	cardtest1.c	14;"	d	file:
-MAX_DECK	cardtest2.c	14;"	d	file:
-MAX_DECK	cardtest3.c	14;"	d	file:
+MAX_DECK	cardtest1.c	15;"	d	file:
+MAX_DECK	cardtest2.c	15;"	d	file:
+MAX_DECK	cardtest3.c	15;"	d	file:
 MAX_DECK	dominion.h	7;"	d
+MAX_DECK	randomtestcard1.c	15;"	d	file:
 MAX_DECK	unittest1.c	13;"	d	file:
 MAX_DECK	unittest2.c	15;"	d	file:
 MAX_DECK	unittest3.c	15;"	d	file:
@@ -139,17 +140,21 @@ coins	dominion.h	/^  int coins; \/* Use as you see fit! *\/$/;"	m	struct:gameSta
 compare	dominion.c	/^int compare(const void* a, const void* b) {$/;"	f
 compare	dominion2.c	/^int compare(const void* a, const void* b) {$/;"	f
 compareArray	myTestFunctions.c	/^int compareArray(int preArr[], int postArr[], int size){$/;"	f
+compareArray	mytest2.c	/^int compareArray(int preArr[], int postArr[], int size){$/;"	f
 compareData	myTestFunctions.c	/^int compareData(void *pre, void *post, int size){$/;"	f
-compareStates	myTestFunctions.c	/^int compareStates(int *failFlag, struct gameState *pre, struct gameState *post){$/;"	f
+compareData	mytest2.c	/^int compareData(void *pre, void *post, int size){$/;"	f
+compareStates	myTestFunctions.c	/^void compareStates(int *failFlag, struct gameState *pre, struct gameState *post){$/;"	f
+compareStates	mytest2.c	/^int compareStates(int *failFlag, struct gameState *pre, struct gameState *post){$/;"	f
 copper	dominion.h	/^   copper,$/;"	e	enum:CARD
 council_room	dominion.h	/^   council_room,$/;"	e	enum:CARD
 countHandCoins	interface.c	/^int countHandCoins(int player, struct gameState *game) {$/;"	f
 createRandomDecks	unittest1.c	/^void createRandomDecks(int players, int size, struct gameState *state){$/;"	f
 curse	dominion.h	/^  {curse = 0,$/;"	e	enum:CARD
 cutpurse	dominion.h	/^   cutpurse,$/;"	e	enum:CARD
-debug	cardtest1.c	15;"	d	file:
-debug	cardtest2.c	15;"	d	file:
-debug	cardtest3.c	15;"	d	file:
+debug	cardtest1.c	16;"	d	file:
+debug	cardtest2.c	16;"	d	file:
+debug	cardtest3.c	16;"	d	file:
+debug	randomtestcard1.c	16;"	d	file:
 debug	unittest1.c	15;"	d	file:
 debug	unittest2.c	18;"	d	file:
 deck	dominion.h	/^  int deck[MAX_PLAYERS][MAX_DECK];$/;"	m	struct:gameState
@@ -176,6 +181,7 @@ gameState	dominion.h	/^struct gameState {$/;"	s
 gardens	dominion.h	/^   gardens,$/;"	e	enum:CARD
 getCardCost	interface.c	/^int getCardCost(int card) {$/;"	f
 getCardQuantities	myTestFunctions.c	/^void getCardQuantities(int array[], int size, int cardArray[]){$/;"	f
+getCardQuantities	mytest2.c	/^void getCardQuantities(int array[], int size, int cardArray[]){$/;"	f
 getCost	dominion.c	/^int getCost(int cardNumber)$/;"	f
 getCost	dominion2.c	/^int getCost(int cardNumber)$/;"	f
 getWinners	dominion.c	/^int getWinners(int players[MAX_PLAYERS], struct gameState *state) {$/;"	f
@@ -187,6 +193,7 @@ handCard	dominion.c	/^int handCard(int handPos, struct gameState *state) {$/;"	f
 handCard	dominion2.c	/^int handCard(int handPos, struct gameState *state) {$/;"	f
 handCount	dominion.h	/^  int handCount[MAX_PLAYERS];$/;"	m	struct:gameState
 inArray	myTestFunctions.c	/^int inArray(int arr[], int size, int val){$/;"	f
+inArray	mytest2.c	/^int inArray(int arr[], int size, int val){$/;"	f
 initializeGame	dominion.c	/^int initializeGame(int numPlayers, int kingdomCards[10], int randomSeed,$/;"	f
 initializeGame	dominion2.c	/^int initializeGame(int numPlayers, int kingdomCards[10], int randomSeed,$/;"	f
 initialized	rngs.c	/^static int  initialized   = 0;          \/* test for stream initialization *\/$/;"	v	file:
@@ -201,6 +208,7 @@ main	cardtest2.c	/^int main(){$/;"	f
 main	cardtest3.c	/^int main(){$/;"	f
 main	playdom.c	/^int main (int argc, char** argv) {$/;"	f
 main	player.c	/^int main(int argc, char* argv[]) {$/;"	f
+main	randomtestcard1.c	/^int main(){$/;"	f
 main	rt.c	/^int main(int argc, char** argv) {$/;"	f
 main	supplyTest.c	/^int main () {$/;"	f
 main	testBuyCard.c	/^int main () {$/;"	f
@@ -215,6 +223,7 @@ main2	player.c	/^int main2(int argc, char *argv[]) {$/;"	f
 mine	dominion.h	/^   mine, \/* choice1 is hand# of money to trash, choice2 is supply# of$/;"	e	enum:CARD
 minion	dominion.h	/^   minion, \/* choice1:  1 = +2 coin, 2 = redraw *\/$/;"	e	enum:CARD
 myAssert	myTestFunctions.c	/^int myAssert(char * msg, int *failFlag, int boolean){$/;"	f
+myAssert	mytest2.c	/^int myAssert(char * msg, int *failFlag, int boolean){$/;"	f
 newGame	dominion.c	/^struct gameState* newGame() {$/;"	f
 newGame	dominion2.c	/^struct gameState* newGame() {$/;"	f
 numActions	dominion.h	/^  int numActions; \/* Starts at 1 each turn *\/$/;"	m	struct:gameState
@@ -231,9 +240,9 @@ playCard	dominion.c	/^int playCard(int handPos, int choice1, int choice2, int ch
 playCard	dominion2.c	/^int playCard(int handPos, int choice1, int choice2, int choice3, struct gameState *state) $/;"	f
 playedCardCount	dominion.h	/^  int playedCardCount;$/;"	m	struct:gameState
 playedCards	dominion.h	/^  int playedCards[MAX_DECK];$/;"	m	struct:gameState
-players	cardtest1.c	16;"	d	file:
-players	cardtest2.c	16;"	d	file:
-players	cardtest3.c	16;"	d	file:
+players	cardtest1.c	17;"	d	file:
+players	cardtest2.c	17;"	d	file:
+players	cardtest3.c	17;"	d	file:
 printDeck	interface.c	/^void printDeck(int player, struct gameState *game) {$/;"	f
 printDiscard	interface.c	/^void printDiscard(int player, struct gameState *game) {$/;"	f
 printHand	interface.c	/^void printHand(int player, struct gameState *game) {$/;"	f
@@ -244,7 +253,13 @@ printState	interface.c	/^void printState(struct gameState *game) {$/;"	f
 printSupply	interface.c	/^void printSupply(struct gameState *game) {$/;"	f
 province	dominion.h	/^   province,$/;"	e	enum:CARD
 randomGame	myTestFunctions.c	/^int randomGame(int numPlayers, struct gameState *state){$/;"	f
-randomHand	myTestFunctions.c	/^int randomHand(int player, int size, struct gameState *state){$/;"	f
+randomGame	mytest2.c	/^int randomGame(int numPlayers, struct gameState *state){$/;"	f
+randomHand	myTestFunctions.c	/^void randomHand(int player, int size, struct gameState *state){$/;"	f
+randomHand	mytest2.c	/^int randomHand(int player, int size, struct gameState *state){$/;"	f
+randomNonVictory	myTestFunctions.c	/^int randomNonVictory(int kingdomCards[]){$/;"	f
+randomNonVictory	mytest2.c	/^int randomNonVictory(int kingdomCards[]){$/;"	f
+randomState	myTestFunctions.c	/^int randomState(int numPlayers, struct gameState *state){$/;"	f
+randomState	mytest2.c	/^int randomState(int numPlayers, struct gameState *state){$/;"	f
 remodel	dominion.h	/^   remodel, \/* choice1 is hand# of card to remodel, choice2 is supply# *\/$/;"	e	enum:CARD
 salvager	dominion.h	/^   salvager, \/* choice1 = hand# to trash *\/$/;"	e	enum:CARD
 scoreFor	dominion.c	/^int scoreFor (int player, struct gameState *state) {$/;"	f

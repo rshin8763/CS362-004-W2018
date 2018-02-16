@@ -45,7 +45,7 @@ int randomGame(int numPlayers, struct gameState *state){
     return 0;
 }
 
-int randomHand(int player, int size, struct gameState *state){
+void randomHand(int player, int size, struct gameState *state){
     int i;
     state->handCount[player] = size;
     for (i=0; i<size; i++){
@@ -64,7 +64,7 @@ int myAssert(char * msg, int *failFlag, int boolean){
     return !boolean;
 }
 
-int compareStates(int *failFlag, struct gameState *pre, struct gameState *post){
+void compareStates(int *failFlag, struct gameState *pre, struct gameState *post){
     char *preData = (char*)pre;
     char *postData = (char*)post;
     int i;

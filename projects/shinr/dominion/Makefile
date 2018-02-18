@@ -33,8 +33,14 @@ runtests: testDrawCard
 	gcov dominion.c >> unittestresult.out
 	cat dominion.c.gcov >> unittestresult.out
 
-randomtests: randomtestcard1.c dominion.o rngs.o myTestFunctions.o 
+randomtest1: randomtestcard1.c dominion.o rngs.o myTestFunctions.o 
 	gcc -o randomtest1 -g randomtestcard1.c dominion.o rngs.o myTestFunctions.o $(CFLAGS)
+
+randomtest2: randomtestcard2.c dominion.o rngs.o myTestFunctions.o 
+	gcc -o randomtest2 -g randomtestcard2.c dominion.o rngs.o myTestFunctions.o $(CFLAGS)
+
+randomtestadventurer: randomtestadventurer.c dominion.o rngs.o myTestFunctions.o 
+	gcc -o randomtestadventurer -g randomtestadventurer.c dominion.o rngs.o myTestFunctions.o $(CFLAGS)
 
 unittestresults.out: unittest1.c unittest2.c unittest3.c unittest4.c dominion.o rngs.o myTestFunctions.o cardtest1.c cardtest2.c cardtest3.c
 	echo "Results for running dominion tests:" >> unittestresults.out

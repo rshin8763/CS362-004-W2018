@@ -14,5 +14,7 @@ int compareData(void *pre, void *post, int size);
 int compareArray(int pre[], int post[], int size);
 int randomNonVictory(int kingdomCards[]);
 int randomState(int numPlayers, struct gameState *state);
+void printArray(char *name, int arr[], int size);
+void printState(char *name, struct gameState *post, int handPos, int testPlayer);
 
 #endif

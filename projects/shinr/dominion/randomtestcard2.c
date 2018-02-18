@@ -27,11 +27,11 @@ int main(){
     int i;
     int j;
 
-    printf("------TEST FOR SMITHY------\n");
+    printf("------TEST FOR GREAT HALL------\n");
     for (testCount = 0; testCount < 100000; ++testCount){
         testFail = 0;
         // Deck is updated
-        int tf_playerDeckChanged = 0;
+        int tf_deckUpdate = 0;
         // Hand is updated with cards missing from Deck
         int tf_handUpdate = 0;
         // Action value is the same
@@ -64,20 +64,22 @@ int main(){
         int handPos = rand()%post.handCount[testPlayer];
 
         //set card int hand position to smithy
-        post.hand[testPlayer][handPos] = smithy;
+        post.hand[testPlayer][handPos] = great_hall;
 
         //save game state
         memcpy(&pre, &post, sizeof(struct gameState));
 
-        cardEffect(smithy, choice1, choice2, choice3, &post, handPos, &bonus);
+        cardEffect(great_hall, choice1, choice2, choice3, &post, handPos, &bonus);
 
-        // Hand should have 2 extra cards. +3 then the smithy discard
-        myAssert ("Player's hand has two drawn cards", &tf_handUpdate, pre.handCount[testPlayer] + 2 == post.handCount[testPlayer]);
+        // Hand should have the same number of cards. +1 then the great_hall discard
+        myAssert ("Player's hand has drawn one card", &tf_handUpdate, pre.handCount[testPlayer] == post.handCount[testPlayer]);
 
         // Due to the fact that an empty deck will cause shuffling, the invariant is that deck + played/discard should have 2 fewer cards due to the drawn cards being 
         // in hand.
-        myAssert ("Player Deck was incremented", &tf_playerDeckChanged, (pre.deckCount[testPlayer] + pre.discardCount[testPlayer] + pre.playedCardCount) == (post.discardCount[testPlayer] + post.deckCount[testPlayer] + post.playedCardCount + 2));
+        myAssert ("Great_Hall card was discarded", &tf_deckUpdate, (pre.deckCount[testPlayer] + pre.discardCount[testPlayer] + pre.playedCardCount) == (post.discardCount[testPlayer] + post.deckCount[testPlayer] + post.playedCardCount));
 
+        myAssert("numActions increased", &tf_otherStates, pre.numActions + 1 == post.numActions);
+        
         //Other player's cards are not changed
         for (j=0; j<MAX_PLAYERS; j++){
             if (j != testPlayer){
@@ -97,25 +99,21 @@ int main(){
 
         // The multiset of cards in hand + deck + discard should be the same before and afterwards
         myAssert("numPlayers unchanged", &tf_otherStates, pre.numPlayers == post.numPlayers); 
-
         for (i = 0; i<= treasure_map; ++i){
             myAssert("supplyCount unchanged", &tf_otherStates, pre.supplyCount[i] == post.supplyCount[i]);
             myAssert("embargoTokens unchanged", &tf_otherStates, pre.embargoTokens[i] == post.embargoTokens[i]);
         }
         myAssert("outpostPlayed unchanged", &tf_otherStates, pre.outpostPlayed == post.outpostPlayed);
         myAssert("outpostTurn unchanged", &tf_otherStates, pre.outpostTurn == post.outpostTurn);
-        myAssert("numActions unchanged", &tf_otherStates, pre.numActions == post.numActions);
         myAssert("coins unchanged", &tf_otherStates, pre.coins == post.coins);
         myAssert("numBuys unchanged", &tf_otherStates, pre.numBuys == post.numBuys);
 
-        testFail += tf_playerDeckChanged + tf_handUpdate + tf_actionValue + tf_playedPile + tf_otherPlayerState;
+        testFail += tf_deckUpdate + tf_handUpdate + tf_actionValue + tf_playedPile + tf_otherPlayerState;
         if (testFail){
             //print PreState
-            if(DEBUG)
-                printState("pre", &pre, handPos, testPlayer);
+            printState("pre", &pre, handPos, testPlayer);
             //print PostState
-            if(DEBUG)
-                printState("post", &post, handPos, testPlayer);
+            printState("post", &post, handPos, testPlayer);
         }
         overallFail += testFail;
     }

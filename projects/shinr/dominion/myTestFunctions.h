@@ -16,5 +16,6 @@ int randomNonVictory(int kingdomCards[]);
 int randomState(int numPlayers, struct gameState *state);
 void printArray(char *name, int arr[], int size);
 void printState(char *name, struct gameState *post, int handPos, int testPlayer);
+int testOtherPlayerStates(struct gameState *pre, struct gameState *post, int testPlayer);
 
 #endif

@@ -6,6 +6,28 @@
 #include <time.h>
 #include <assert.h>
 
+int testOtherPlayerStates(struct gameState * pre, struct gameState * post, int testPlayer){
+    int j;
+    int failFlag = 0;
+    for (j=0; j<pre->numPlayers; j++){
+        if (j != testPlayer){
+            if ( !(!compareArray(pre->hand[j], post->hand[j], post->handCount[j])))
+                failFlag = 1;
+            if ( !( pre->handCount[j] == post->handCount[j]))
+                failFlag = 1;
+            if ( !( !compareArray(pre->deck[j], post->deck[j], post->deckCount[j])))
+                failFlag = 1;
+            if ( !( pre->deckCount[j] == post->deckCount[j]))
+                failFlag = 1;
+            if ( !( !compareArray(pre->discard[j], post->discard[j], post->discardCount[j])))
+                failFlag = 1;
+            if ( !( pre->discardCount[j] == post->discardCount[j]))
+                failFlag = 1;
+        }
+    }
+    return failFlag;
+}
+
 void getCardQuantities(int array[], int size, int cardArray[]){
     int i, j;
     //clear card array
@@ -95,11 +117,9 @@ int randomState(int numPlayers, struct gameState *state){
             int maxDeck = startingDeck + rand()%(MAX_DECK - startingDeck + 1);
             //Ensure that hand has at least 1 card in it (to be used as action card).
             maxDeck -= state->handCount[i] = rand()%(maxDeck-1+1)+1;
-            //Ensure that deck and discard combined has at least 3 cards in it.
             maxDeck -= state->deckCount[i] = rand()%(maxDeck+1);
-            //maxDeck -= state->playedCardCount = rand()%(maxDeck+1);
             state->discardCount[i] = maxDeck;
-        } while (state->deckCount[i] + state->discardCount[i] <= 5);
+        } while (state->deckCount[i] + state->discardCount[i] <= 5); // Ensure that deck + discard have at least 5 cards
 
         assert(state->handCount[i] + state->deckCount[i] + state->playedCardCount + state->discardCount[i] <= MAX_DECK);
 

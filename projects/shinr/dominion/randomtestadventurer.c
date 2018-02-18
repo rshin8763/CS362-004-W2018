@@ -2,7 +2,7 @@
  ** Program Filename:  cardtest1.c
  ** Author: Ryan Shin 
  ** Date: 2/04/18
- ** Description: This is a unit test for the adventurer card in dominion.c
+ ** Description: This is a random test generator and oracle for the adventurer card in dominion.c
  *********************************************************************/
 #include "myTestFunctions.h"
 #include "dominion.h"
@@ -21,14 +21,15 @@
 
 
 int tf_deckUpdate = 0; // Deck was properly updated
-int tf_handUpdate = 0; // Hand was properly updated
 int tf_actionValue = 0; // Action value was properly updated
-int tf_playedPile = 0; // Played pile was properly udpated
 int tf_coinCount = 0; // Number of treasure gained was correct
 int tf_coinValue = 0; // Value of coins state variable matches treasures drawn
 int tf_adventurerDiscard = 0; // Adventurer was discarded
 int tf_otherPlayerState = 0; // Other player's states are unchagned
 int tf_otherStates = 0; // All other states are unchanged
+int tf_supply = 0; // Supply cards unchanged
+int tf_embargo = 0;  // Embargo tokens unchagned
+int testFail;
 
 int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState *state, int handPos, int *bonus);
 
@@ -49,59 +50,48 @@ void testAdventurer(struct gameState *pre, struct gameState *post, int testPlaye
     for (i = 0; i <= treasure_map; ++i){
         if(i == copper){
             copperGained = postCardQuantity[i] - preCardQuantity[i];
-            myAssert("Coppers gained is non negative", &tf_coinCount,
-                    copperGained >= 0);
         }
         else if(i == silver){
             silverGained = postCardQuantity[i] - preCardQuantity[i];
-            myAssert("Silvers gained is non negative", &tf_coinCount,
-                    silverGained >= 0);
         }
         else if(i == gold){
             goldGained = postCardQuantity[i] - preCardQuantity[i];
-            myAssert("Golds gained is non negative", &tf_coinCount,
-                    goldGained >= 0);
         }
         else if(i == adventurer){
-            myAssert("An adventurer card was removed from hand", &tf_adventurerDiscard,
-                    postCardQuantity[i] == preCardQuantity[i] - 1);
+            if (!(postCardQuantity[i] == preCardQuantity[i] - 1)) {
+                tf_adventurerDiscard++;
+                testFail = 1;
+            }
         }
     }
-    myAssert("2 treasures were drawn", &tf_coinCount,
-            (copperGained + silverGained + goldGained == 2));
-
-    myAssert("Coin value matches the 2 treasures drawn", &tf_coinValue,
-            (post->coins - pre->coins == copperGained + 2*silverGained + 3*goldGained));
+    if (!(copperGained + silverGained + goldGained == 2)){
+        tf_coinCount++;
+        testFail = 1;
+    }
+        
+    if (!(post->coins - pre->coins == copperGained + 2*silverGained + 3*goldGained)){
+        tf_coinValue++;
+        testFail = 1;
+    }
 }
 
 int main(){
-    int overallFail;
-    int testFail;
+    int overallFail = 0;
     int testCount;
+    int firstFail = 1;
     int i;
-    int j;
 
     printf("------TEST FOR ADVENTURER--------\n");
-    for (testCount = 0; testCount < 10000; ++testCount){
+    for (testCount = 0; testCount < 100000; ++testCount){
         testFail = 0;
 
-        tf_deckUpdate = 0;
-        tf_handUpdate = 0;
-        tf_actionValue = 0;
-        tf_playedPile = 0;
-        tf_coinCount = 0;
-        tf_coinValue = 0;
-        tf_adventurerDiscard = 0;
-        tf_otherPlayerState = 0;
-        tf_otherStates = 0;
-
-        printf("------TEST %d--------\n", testCount);
 
         srand(time(0));
         struct gameState post;
         struct gameState pre;
 
-        int numPlayers = MAX_PLAYERS;
+        // between 2 and MAX_PLAYERS players
+        int numPlayers = rand()%(MAX_PLAYERS-1) + 2;
 
         //initialize random game
         //randomGame(numPlayers, &post);
@@ -118,55 +108,74 @@ int main(){
         post.hand[testPlayer][handPos] = adventurer;
 
         updateCoins(testPlayer, &post, bonus);
-        //save game state
 
+        //save game state
         memcpy(&pre, &post, sizeof(struct gameState));
 
+        //play card
         playCard(handPos, choice1, choice2, choice3, &post);
 
         // Test adventurer card effect
         testAdventurer(&pre, &post, testPlayer);
 
-        // Test that other player's cards are not changed
-        for (j=0; j<MAX_PLAYERS; j++){
-            if (j != testPlayer){
-                myAssert("Other player's hand is preserved", &tf_otherPlayerState, !compareArray(pre.hand[j], post.hand[j], MAX_HAND));
+        //Other player's cards are not changed
+        if (testOtherPlayerStates(&pre, &post, testPlayer)){
+            tf_otherPlayerState++;
+            testFail = 1;
+        }
 
-                myAssert("Other player's handCount is preserved", &tf_otherPlayerState, pre.handCount[j] == post.handCount[j]);
+        //Check other state variables
+        int stateFlag = 0;
+        if ( !( pre.numPlayers == post.numPlayers))
+            stateFlag = 1; 
+        if ( !( pre.outpostPlayed == post.outpostPlayed))
+            stateFlag = 1;
+        if ( !( pre.outpostTurn == post.outpostTurn))
+            stateFlag = 1;
+        if ( !( pre.numBuys == post.numBuys))
+            stateFlag = 1;
 
-                myAssert("Other player's deck is preserved", &tf_otherPlayerState,  !compareArray(pre.deck[j], post.deck[j], MAX_DECK));
+        if (stateFlag) {
+            tf_otherStates++;
+            testFail = 1;
+        }
 
-                myAssert("Other player's deckCount is preserved", &tf_otherPlayerState, pre.deckCount[j] == post.deckCount[j]);
-
-                myAssert("Other player's discard is preserved",&tf_otherPlayerState, !compareArray(pre.discard[j], post.discard[j], MAX_DECK));
-
-                myAssert("Other player's discardCount is preserved", &tf_otherPlayerState, pre.discardCount[j] == post.discardCount[j]);
+        for (i = 0; i<= treasure_map; ++i){
+            if ( ! ( pre.supplyCount[i] == post.supplyCount[i])){
+                tf_supply += 1;
+                testFail = 1;
+            }
+            if ( ! ( pre.embargoTokens[i] == post.embargoTokens[i])){
+                tf_embargo += 1;
+                testFail = 1;
             }
         }
 
-        // Test all other state invariants
-        for (i = 0; i<= treasure_map; ++i){
-            myAssert("supplyCount unchanged", &tf_otherStates, pre.supplyCount[i] == post.supplyCount[i]);
-            myAssert("embargoTokens unchanged", &tf_otherStates, pre.embargoTokens[i] == post.embargoTokens[i]);
-        }
-        myAssert("outpostPlayed unchanged", &tf_otherStates, pre.outpostPlayed == post.outpostPlayed);
-        myAssert("outpostTurn unchanged", &tf_otherStates, pre.outpostTurn == post.outpostTurn);
-        myAssert("numActions decremented", &tf_otherStates, pre.numActions == post.numActions + 1);
-        myAssert("numBuys unchanged", &tf_otherStates, pre.numBuys == post.numBuys);
-
-        testFail += tf_deckUpdate + tf_handUpdate + tf_actionValue + tf_playedPile + tf_coinCount + tf_coinValue + tf_adventurerDiscard + tf_otherPlayerState + tf_otherStates;
-
         if (testFail){
-            //print PreState
-            if(DEBUG)
+            if(firstFail){
+                printf("AT LEAST ONE TEST FAILED!! HERE IS THE PRE AND POST STATE FOR DEBUGGING.\n");
+                //print PreState
                 printState("pre", &pre, handPos, testPlayer);
-            //print PostState
-            if(DEBUG)
+                //print PostState
                 printState("post", &post, handPos, testPlayer);
+                firstFail = 0;
+            }
         }
         overallFail += testFail;
     }
-    if (overallFail){
-    } else printf("ALL TESTS SUCCESSFUL\n");
+
+    // Print Test Results
+    printf(" ----- TEST RESULTS -----\n");
+    printf("Deck and Discard correctly updated: %d out of %d FAILED\n", tf_deckUpdate, testCount);
+    printf("Draw 2 treasures: %d out of %d FAILED\n", tf_coinCount, testCount);
+    printf("Coin count matches treasures drawn: %d out of %d FAILED\n", tf_coinValue, testCount);
+    printf("Adventurer card removed from hand: %d out of %d FAILED\n", tf_adventurerDiscard, testCount);
+    printf("Action value: %d out of %d FAILED\n", tf_actionValue, testCount);
+    printf("Other Player States: %d out of %d FAILED\n", tf_otherPlayerState, testCount);
+    printf("Embargo tokens: %d out of %d FAILED\n", tf_embargo, testCount);
+    printf("Supply unchanged: %d out of %d FAILED\n", tf_supply, testCount);
+    printf("Other state variables unchanged: %d out of %d FAILED\n", tf_otherStates, testCount);
+    printf("Overall: %d out of %d PASSED\n\n", testCount - overallFail, testCount);
+
     return 0;
 }

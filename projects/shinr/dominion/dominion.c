@@ -683,6 +683,7 @@ int ce_council_room(struct gameState *state, int currentPlayer, int handPos){
         if ( i != currentPlayer )
         {
             drawCard(i, state);
+            //Added an extra drawCard
             drawCard(i, state);
         }
     }
@@ -709,6 +710,7 @@ int ce_steward(struct gameState *state, int currentPlayer, int choice1, int choi
     else
     {
         //trash 2 cards in hand
+        // BUG: Trash choice 1 instead of choice 2.
         discardCard(choice1, currentPlayer, state, 1);
         discardCard(choice3, currentPlayer, state, 1);
     }
@@ -776,7 +778,7 @@ int ce_minion(struct gameState *state, int currentPlayer, int choice1, int choic
 int ce_smithy(struct gameState *state, int currentPlayer, int handPos){
     int i;
     //+3 Cards
-    for (i = 0; i < 3; i++)
+    for (i = 0; i < 4; i++)
     {
         drawCard(currentPlayer, state);
     }

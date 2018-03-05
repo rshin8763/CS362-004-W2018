@@ -643,7 +643,7 @@ int getCost(int cardNumber)
   return -1;
 }
 
-int ce_adventurer(struct gameState *state, int *drawntreasure, int currentPlayer, int *z, int *temphand){
+int ce_adventurer(struct gameState *state, int *drawntreasure, int currentPlayer, int *z, int *temphand, int handPos){
     int cardDrawn;
     while(*drawntreasure<2){
         if (state->deckCount[currentPlayer] <1){//if the deck is empty we need to shuffle discard and add to deck
@@ -664,6 +664,8 @@ int ce_adventurer(struct gameState *state, int *drawntreasure, int currentPlayer
         //Deleted *z = *z-1
         *z = *z-1;
     }
+    //put played card in played card pile
+    discardCard(handPos, currentPlayer, state, 0);
     return 0;
 }
 
@@ -810,7 +812,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
     switch( card ) 
     {
         case adventurer:
-            return ce_adventurer(state, &drawntreasure, currentPlayer, &z, temphand);
+            return ce_adventurer(state, &drawntreasure, currentPlayer, &z, temphand, handPos);
 
         case council_room:
             return ce_council_room(state, currentPlayer, handPos);

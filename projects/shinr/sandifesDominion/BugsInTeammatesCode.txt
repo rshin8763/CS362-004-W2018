@@ -1,0 +1,52 @@
+BUG REPORT
+
+Bug #1 – Action value update error in Great Hall card
+Priority: High
+Is it reproducible: Yes
+
+Summary:
+The number of Actions available to the player after playing Great Hall is not
+what it should be. The assertion that the card gives +1 to numActions failed.
+After checking the gameState after the adventurer cardEffect was called, it was
+found that the action value was not changed. Instead, numActions should’ve been
+incremented. Other aspects of the greatHall card passed the tests.
+
+Suggestion: 
+Check the method that contains the code for adventurer in dominion.c, and make
+sure that state->numActions is correctly incremented. 
+
+Bug#2 – Adventurer card only draws coppers instead of all treasures
+Priority: Medium
+Is it reproducible: Yes
+
+Summary:
+The Adventurer card only draws copper cards. I ran my adventurer random test
+suite and found that all 10,000 iterations failed. After looking at an example
+pre and post gameState I found that while the number of treasures that the hand
+had was 2 greater as expected, the new cards were all value 4, or copper. Then,
+looking at the discard pile, which has cards drawn from the deck that were
+considered not treasure cards, I found multiple silvers and golds that were
+discarded. There is likely an error with the conditionals that determine
+whether a certain card is treasure or not. 
+
+Suggestion:
+Check the method that contains the code for adventurer in dominion.c, and make
+sure that the conditionals are correctly identifying copper, silver and gold as
+treasure cards. 
+
+
+Bug #3- Smithy draws too many cards
+Priority: High
+Is it reproducible: Yes
+
+Summary:
+The smithy card drew 9 cards instead of the expected 3.  The smithy card was
+discarded afterwards so at least that functionality worked as expected. None of
+the other player’s cards or states were changed. In addition none of the other
+gameState variables seemed to be changed. The bug seems to be only that smithy
+drew 9 cards instead of 3. 
+
+Suggestion:
+Check the method that contains the code for smithy in dominion.c and make sure
+exactly 3 cardDrawn() function calls are made. 
+
